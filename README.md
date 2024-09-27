@@ -47,3 +47,7 @@ and add the following after the .html
 Once everything is configured and saved, you can now open *.html in your default web browser to test. 
 
 Copy the URL from your browser to add it to OBS as a browser source... example: (file:///home/user/twitch_gif_overlay-bot/gif_overlay.html)
+
+# Screenshot
+
+![border_screenshot](https://github.com/RonXTCdaBass/TwitchGifBotOverlay/blob/main/border_screenshot.jpg)
