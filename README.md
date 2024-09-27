@@ -1,6 +1,6 @@
 # Twitch Gif Bot Overlay
 
-This will allow Twitch chat to use a custom command like: "!gif  https://tw-pics.4lima.de/peace_puzzle.gif". 
+This will allow Twitch chat to use a custom command like: "!gif  FullURL/peace_puzzle.gif". 
 It will then display the image from the user. 
 
 including 2 versions for use
