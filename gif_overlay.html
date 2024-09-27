@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<title>Twitch Gif Bot</title>
+<head>
+	<script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+	<script src="https://github.com/tmijs/tmi.js/releases/download/v1.8.5/tmi.min.js"></script>
+	<style>
+		/* for using as a OBS browser source, set background: transparent; */
+		body {
+			background-color: transparent;
+			/*background: radial-gradient(circle, rgba(0,222,229,1) 0%, rgba(106,0,176,1) 100%);*/
+			background-size: contain;
+			background-position: center;
+			background-repeat: no-repeat;
+			overflow: hidden;
+			margin: 0;
+			padding: 0;
+		}
+
+		#gif_div {
+			background-size: contain;
+			background-position: center;
+			background-repeat: no-repeat;
+			overflow: hidden;
+			margin: 0;
+			padding: 0;
+			width: 100vw;
+			height: 100vh;
+		}
+	</style>
+</head>
+
+<body>
+
+	<div id="gif_div"></div>
+
+	<script>
+	function getUrlParameter(name) {
+    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+    let regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+    let results = regex.exec(location.search);
+    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+}
+
+		// Configuration - Settings
+		let twitchChannel = getUrlParameter('channel').toLowerCase().trim();
+		let twitchChatCommand = "!gif";
+		let defaultImage = "";
+		let timeOut = 10;
+
+		if (!defaultImage) {
+			defaultImage = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+		}
+
+		$('#gif_div').css('background-image', 'url(' + defaultImage + ')');
+
+		function doGif(ImageOriginalURL) {
+
+			let timer;
+
+			// this makes the code/function 'blocking'. Do nothing if a gif is currently playing.
+			// twitchChatCommand will be ignored if a gif is currently playing.
+			// Set timeOut = 0 to play the last gif until another gif is played.
+			if (timeOut > 0) {
+				if ($('#gif_div').hasClass('active')) return;
+			}
+
+			// replace image source with a random gif image from the user
+			$('#gif_div').css('background-image', 'url(' + ImageOriginalURL + ')');
+			$('#gif_div').addClass('active');
+
+			if (timeOut > 0) {
+
+				timer = setTimeout(function () {
+
+					$('#gif_div').removeClass('active');
+
+					// go back to defaultImage when gif is done playing
+					$('#gif_div').css('background-image', 'url(' + defaultImage + ')');
+
+					clearTimeout(timer);
+
+				}, timeOut * 1000);
+
+			}
+
+			return true;
+		}
+
+		// TMIjs Twitch chat connection
+		const client = new tmi.Client({
+			channels: [twitchChannel]
+		});
+
+		client.connect().catch(console.error);
+
+		// triggers on message
+		client.on('chat', (channel, user, message, self) => {
+
+			// do nothing if message does not start with twitchChatCommand
+			if (self || !message.startsWith(twitchChatCommand)) return;
+
+			// grabs the first word from the message
+			let commandOption = message.split(' ')[0];
+			// grabs all words/text that comes after the commandOption
+			let ImageOriginalURL = message.slice(message.indexOf(twitchChatCommand) + twitchChatCommand.length);
+			// Compares checks if first word equals twitchChatCommand and that it has words/text following it.
+			if (commandOption.trim() === twitchChatCommand && ImageOriginalURL > '') {
+				// All conditons met, now do the gif function
+				doGif(ImageOriginalURL);
+			}
+
+		});   
+	</script>
+
+</body>
+
+</html>
