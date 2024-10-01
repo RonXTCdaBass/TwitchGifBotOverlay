@@ -18,7 +18,7 @@
 		}
 
 		#gif_div {
-			background-size: auto,contain;
+			background-size: contain,contain; /* auto,contain; */
 			background-position: center;
 			background-repeat: no-repeat,no-repeat;
 			overflow: hidden;
@@ -77,7 +77,7 @@
 			}
 
 			// replace image source with the image from the user
-			$('#gif_div').css('background-image', 'url(' + ImageOriginalURL + '), url(' + borderImage + ')');
+			$('#gif_div').css('background-image', 'url(' + borderImage + '), url(' + ImageOriginalURL + ')');
 			$('#gif_div').addClass('active');
 
 			if (timeOut > 0) {
