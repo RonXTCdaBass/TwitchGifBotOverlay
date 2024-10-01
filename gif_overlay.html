@@ -43,7 +43,10 @@
 }
 
 		// Configuration - Settings
+		// if you have problems to add the channel in adressfield of OBS change the following 2 lines:
+		//let twitchChannel = "YOURCHANNEL";
 		let twitchChannel = getUrlParameter('channel').toLowerCase().trim();
+		
 		let twitchChatCommand = "!gif";
 		let defaultImage = "";
 		let timeOut = 10;
