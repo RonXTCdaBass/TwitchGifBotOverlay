@@ -44,14 +44,14 @@
 <////////////////////////////////////////////////////////////////////-->
 
 <script>
-<!--START---GET-CHANNEL-FROM-ADRESSFIELD--->
+//<!--START---GET-CHANNEL-FROM-ADRESSFIELD--->
  function getUrlParameter(name) {
     name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
     let regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
     let results = regex.exec(location.search);
     return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
 	}
-<!---GET-CHANNEL-FROM-ADRESSFIELD---END-->
+//<!---GET-CHANNEL-FROM-ADRESSFIELD---END-->
 
  let twitchChannel = getUrlParameter('channel').toLowerCase().trim();
 //let twitchChannel = "YOURCHANNEL"; 		// enter your channel for work
@@ -148,3 +148,4 @@ if (self || !message.startsWith(twitchChatCommand)) return;
 </body>
 
 </html>
+
