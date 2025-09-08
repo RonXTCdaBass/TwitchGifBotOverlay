@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<title>Twitch Gif Bot</title>
+<title>Twitch Gif-Overlay Bot - by RonXTCdaBass</title>
 <head>
 	<script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
 	<script src="https://github.com/tmijs/tmi.js/releases/download/v1.8.5/tmi.min.js"></script>
@@ -34,87 +34,116 @@
 
 	<div id="gif_div"></div>
 
-	<script>
-	function getUrlParameter(name) {
+<!--/////////////////////////////////////////////////////////////////	
+<// Configuration - Settings -instructions
+<//
+<// If the file is only to be used locally in OBS for a single fixed channel, 
+<// please comment out the following paragraph between <-start ... & end-> tag and 
+<// simply swap the two lines beginning with "let twitchChannel = ..." and 
+<// enter the twitch channel. 
+<////////////////////////////////////////////////////////////////////-->
+
+<script>
+<!--START---GET-CHANNEL-FROM-ADRESSFIELD--->
+ function getUrlParameter(name) {
     name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
     let regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
     let results = regex.exec(location.search);
     return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+	}
+<!---GET-CHANNEL-FROM-ADRESSFIELD---END-->
+
+ let twitchChannel = getUrlParameter('channel').toLowerCase().trim();
+//let twitchChannel = "YOURCHANNEL"; 		// enter your channel for work
+
+
+let twitchChatCommand = "!gif";				// the command used in chat
+let defaultImage = '';						// empty or put image-url 		 only for positioning the overlay
+let PAUSE_DURATION = 5 * 1000; 				// 5 seconds Pause between the gifs
+let DISPLAY_DURATION = 15 * 1000; 			// 15 seconds every gif visible
+
+if (!defaultImage) {
+defaultImage = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 }
 
-		// Configuration - Settings
-		// if you have problems to add the channel in adressfield of OBS change the following 2 lines:
-		//let twitchChannel = "YOURCHANNEL";
-		let twitchChannel = getUrlParameter('channel').toLowerCase().trim();
-		
-		let twitchChatCommand = "!gif";
-		let defaultImage = "";
-		let timeOut = 10;
+	$('#gif_div').css('background-image', 'url(' + defaultImage + ')');
 
-		if (!defaultImage) {
-			defaultImage = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-		}
+function doGif(ImageOriginalURL) {
+				$('#gif_div').css('background-image', 'url(' + ImageOriginalURL + ')');
+				$('#gif_div').addClass('active');
 
-		$('#gif_div').css('background-image', 'url(' + defaultImage + ')');
-
-		function doGif(ImageOriginalURL) {
-
-			let timer;
-
-			// this makes the code/function 'blocking'. Do nothing if a gif is currently playing.
-			// twitchChatCommand will be ignored if a gif is currently playing.
-			// Set timeOut = 0 to play the last gif until another gif is played.
-			if (timeOut > 0) {
-				if ($('#gif_div').hasClass('active')) return;
+// Set a timeout to handle the display duration
+			setTimeout(() => {
+				$('#gif_div').removeClass('active');
+// go back to defaultImage when gif is done playing
+				$('#gif_div').css('background-image', 'url(' + defaultImage + ')');
+				}, DISPLAY_DURATION);
 			}
 
-			// replace image source with a random gif image from the user
-			$('#gif_div').css('background-image', 'url(' + ImageOriginalURL + ')');
-			$('#gif_div').addClass('active');
+// Queue class to manage gif playback
+function Queue(options) {
+let queue = [];
+let isLooping = false;
+let isPaused = false;
 
-			if (timeOut > 0) {
-
-				timer = setTimeout(function () {
-
-					$('#gif_div').removeClass('active');
-
-					// go back to defaultImage when gif is done playing
-					$('#gif_div').css('background-image', 'url(' + defaultImage + ')');
-
-					clearTimeout(timer);
-
-				}, timeOut * 1000);
-
-			}
-
-			return true;
+		this.loop = async () => {
+		isLooping = true;
+		while (queue.length > 0 && !isPaused) {
+		const item = queue.shift(); // remove the item from the queue
+		await item(); // execute the item
+		await new Promise(resolve => setTimeout(resolve, PAUSE_DURATION)); // Pause before the next gif
 		}
+		isLooping = false; // Mark as not looping
+		};
 
-		// TMIjs Twitch chat connection
-		const client = new tmi.Client({
-			channels: [twitchChannel]
+			this.add = (item) => {
+			if (isPaused) return;
+			queue.push(options.onAdd ? options.onAdd(item) : item);
+			if (!isLooping) this.loop(); // Start the loop if not already running
+			};
+
+		this.clear = () => {
+		queue = [];
+		};
+
+			this.pause = (duration = 0) => {
+					isPaused = true;
+					setTimeout(() => (isPaused = false), duration);
+					};
+
+					this.isLooping = isLooping;
+					}
+
+// Instantiate the queue for gif commands
+const gifQueue = new Queue({
+			onAdd: (imageURL) => () => {
+			doGif(imageURL.trim());
+			return new Promise(resolve => setTimeout(resolve, DISPLAY_DURATION));
+			}
 		});
 
-		client.connect().catch(console.error);
+// TMIjs Twitch chat connection
+const client = new tmi.Client({
+				channels: [twitchChannel]
+			});
 
-		// triggers on message
-		client.on('chat', (channel, user, message, self) => {
+client.connect().catch(console.error);
 
-			// do nothing if message does not start with twitchChatCommand
-			if (self || !message.startsWith(twitchChatCommand)) return;
+// Triggers on message
+client.on('chat', (channel, user, message, self) => {
+// Do nothing if message does not start with twitchChatCommand
+if (self || !message.startsWith(twitchChatCommand)) return;
 
-			// grabs the first word from the message
-			let commandOption = message.split(' ')[0];
-			// grabs all words/text that comes after the commandOption
-			let ImageOriginalURL = message.slice(message.indexOf(twitchChatCommand) + twitchChatCommand.length);
-			// Compares checks if first word equals twitchChatCommand and that it has words/text following it.
-			if (commandOption.trim() === twitchChatCommand && ImageOriginalURL > '') {
-				// All conditons met, now do the gif function
-				doGif(ImageOriginalURL);
+// Grabs all words/text that comes after the command
+		let ImageOriginalURL = message.slice(message.indexOf(twitchChatCommand) + twitchChatCommand.length);
+
+// Check if there's a valid gif URL
+		if (ImageOriginalURL.trim() !== '') {
+// Add the gif command to the queue
+			gifQueue.add(ImageOriginalURL);
 			}
-
-		});   
-	</script>
+});
+</script>
 
 </body>
 
