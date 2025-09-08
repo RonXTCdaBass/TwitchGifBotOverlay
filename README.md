@@ -1,4 +1,5 @@
 # Twitch Gif Bot Overlay
+## (final version 2025 with queue)
 
 This will allow Twitch chat to use a custom command like: "!gif  FullURL/peace_puzzle.gif". 
 It will then display the image from the user. 
@@ -23,26 +24,28 @@ and add the following after the .html
 `?channel=YOURCHANNEL`.
 
 
-
 ### 2.Advanced way
 
 - Open *.html in a text editor like notepad++
 - Look for this section. 
 
-```		// Configuration - Settings
-		// if you have problems to add the channel in adressfield of OBS uncommand following line:
-		//let twitchChannel = "YOURCHANNEL";
-		let twitchChatCommand = "!gif";
-		let defaultImage = "";
-		let borderImage = "";
-		let timeOut = 10;
+```
+<!--/////////////////////////////////////////////////////////////////	
+<// Configuration - Settings -instructions
+<//
+<// If the file is only to be used locally in OBS for a single fixed channel, 
+<// please comment out the following paragraph between <-start ... & end-> tag and 
+<// simply swap the two lines beginning with "let twitchChannel = ..." and 
+<// enter the twitch channel. 
+<////////////////////////////////////////////////////////////////////-->
 ```
 
 - twitchChannel: Required. Your Twitch channel name.
 - twitchChatCommand: Required. The Twitch chat command (!gif) is standard.
 - defaultImage: Optional. This will set a background image. This could be an image that you want to display when no Gif images are being played.
 - borderImage: Optional. This will set a personal border image. This shows an image in fullscreen that is used when Gif images are being played.
-- timeOut: How long should the image stay on screen. Set this to 0 if you want to image to stay on screen until another image is played.
+- PAUSE_DURATION: How many seconds between the various gif's? (3 * 1000 milliseconds)
+- DISPLAY_DURATION: How long should every image stay on screen? (12 * 1000 milliseconds)
 
 Once everything is configured and saved, you can now open *.html in your default web browser to test. 
 
