@@ -1,10 +1,10 @@
-# Twitch Gif Bot Overlay
+# Twitch Gif Overlay Bot
 ## (final version 2025 with queue)
 
 This will allow Twitch chat to use a custom command like: "!gif  FullURL/peace_puzzle.gif". 
 It will then display the image from the user. 
 
-including 2 versions for use
+download including 2 versions for use
 
 - gif_overlay.html	-> shows the images in fullscreen btw. how big you made the overlay in your OBS...
 - gif-border-include_overlay.html	-> the name say´s all. there is a border included as base64image...
@@ -23,6 +23,10 @@ Simply open the *.html in a web browser
 and add the following after the .html 
 `?channel=YOURCHANNEL`.
 
+* [LIVE-DEMO](https://tw-pics.4lima.de/GifOverlayBot/gob-combi.html?channel=YOURCHANNEL)
+combi version - for fullscreen usage - my border and dvd screensaver like effect - change YOURCHANNEL - in demo you can switch the background ;)
+
+----------
 
 ### 2.Advanced way
 
@@ -51,6 +55,11 @@ Once everything is configured and saved, you can now open *.html in your default
 
 Copy the URL from your browser to add it to OBS as a browser source... example: (file:///home/user/twitch_gif_overlay-bot/gif_overlay.html)
 
-# Screenshot
+## Screenshot
 
 ![border_screenshot](https://github.com/RonXTCdaBass/TwitchGifBotOverlay/blob/main/border_screenshot.jpg)
+
+
+------
+
+
