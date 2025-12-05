@@ -26,6 +26,8 @@ and add the following after the .html
 * [LIVE-DEMO](https://tw-pics.4lima.de/GifOverlayBot/gob-combi.html?channel=YOURCHANNEL)
 combi version - for fullscreen usage - my border and dvd screensaver like effect - change YOURCHANNEL - in demo you can switch the background ;)
 
+* [DEMO-VID](https://youtu.be/t8Eg_nXT11E)
+
 ----------
 
 ### 2.Advanced way
